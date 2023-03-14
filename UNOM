@@ -1,0 +1,34 @@
+from selenium import webdriver
+from bs4 import BeautifulSoup
+
+url = 'https://www.unom.ac.in/index.php?route=administration/announcement'
+
+# Initialize a webdriver object and load the page
+driver = webdriver.Chrome()
+driver.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+# Find the recent announcements section using BeautifulSoup
+recent_announcements = soup.find('div', {'id': 'content'})
+
+# Find all announcement items within the recent announcements section
+announcement_items = recent_announcements.find_all('div', {'class': 'announcement'})
+
+# Loop through all announcement items and extract details
+for item in announcement_items:
+    # Get the title and link of the announcement
+    title = item.find('div', {'class': 'caption'}).text.strip()
+    link = item.find('a').get('href')
+
+    # Get the date of the announcement
+    date = item.find('div', {'class': 'date'}).text.strip()
+
+    # Print announcement details
+    print(f"Title: {title}")
+    print(f"Link: {link}")
+    print(f"Date: {date}\n")
+
+# Quit the webdriver
+driver.quit()
