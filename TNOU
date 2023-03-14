@@ -1,0 +1,33 @@
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+
+url = "https://tnou.ac.in/news-and-events/"
+
+# Use requests to get the page content
+response = requests.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Use Selenium to load the page content with JavaScript
+driver = webdriver.Chrome()
+driver.get(url)
+selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
+driver.quit()
+
+# Find all links on the page using BeautifulSoup
+all_links = selenium_soup.find_all('a')
+
+# Loop through all links and extract link details
+for link in all_links:
+    link_url = link.get('href')
+    link_text = link.text.strip()
+    
+    # Skip links with no text or invalid URLs
+    if not link_text or not link_url:
+        continue
+    
+    # Print link details
+    print(f"Text: {link_text}")
+    print(f"URL: {link_url}\n")
