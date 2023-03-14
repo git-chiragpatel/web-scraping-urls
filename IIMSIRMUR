@@ -3,32 +3,23 @@ from bs4 import BeautifulSoup
 
 url = 'https://www.iimsirmaur.ac.in/announcements'
 
-# Initialize a webdriver object and load the page
 driver = webdriver.Chrome()
 driver.get(url)
 
-# Use BeautifulSoup to parse the page content
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-# Find the recent announcements section using BeautifulSoup
 recent_announcements = soup.find('div', {'class': 'vc_row wpb_row section vc_row-fluid news-media-section'})
 
-# Find all announcement items within the recent announcements section
 announcement_items = recent_announcements.find_all('div', {'class': 'wpb_column vc_column_container vc_col-sm-12 vc_col-lg-12'})
 
-# Loop through all announcement items and extract details
 for item in announcement_items:
-    # Get the title and link of the announcement
     title = item.find('h5').text.strip()
     link = item.find('a').get('href')
 
-    # Get the date of the announcement
     date = item.find('div', {'class': 'wpb_text_column wpb_content_element'}).text.strip()
 
-    # Print announcement details
     print(f"Title: {title}")
     print(f"Link: {link}")
     print(f"Date: {date}\n")
 
-# Quit the webdriver
 driver.quit()
