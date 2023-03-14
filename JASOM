@@ -1,0 +1,30 @@
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+
+url = "https://jagsom.edu.in/"
+
+# Use requests to get the page content
+response = requests.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Use Selenium to load the page content with JavaScript
+driver = webdriver.Chrome()
+driver.get(url)
+selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
+driver.quit()
+
+# Find all announcements using BeautifulSoup
+announcements = selenium_soup.find_all('div', class_='newsticker-item')
+
+# Extract announcement details from each announcement and print
+for announcement in announcements:
+    announcement_title = announcement.find('a').text.strip()
+    announcement_date = announcement.find('span', class_='date').text.strip()
+    announcement_link = url + announcement.find('a')['href']
+    
+    print(f"Title: {announcement_title}")
+    print(f"Date: {announcement_date}")
+    print(f"Link: {announcement_link}\n")
