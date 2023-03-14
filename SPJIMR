@@ -1,30 +1,25 @@
-import requests
 from bs4 import BeautifulSoup
+import requests
+from selenium import webdriver
 
-url = 'https://www.spjimr.org/newsroom/'
+driver = webdriver.Chrome()
 
-# Use requests to get the page content
-response = requests.get(url)
+url = "https://www.spjimr.org/newsroom"
+driver.get(url)
 
-# Use BeautifulSoup to parse the page content
-soup = BeautifulSoup(response.content, 'html.parser')
+html = driver.page_source
 
-# Find the recent announcements section using BeautifulSoup
-recent_announcements = soup.find('div', {'class': 'news-container'})
+soup = BeautifulSoup(html, "html.parser")
 
-# Find all announcement items within the recent announcements section
-announcement_items = recent_announcements.find_all('div', {'class': 'news-item'})
+news_updates_section = soup.find("div", {"class": "views-element-container"})
 
-# Loop through all announcement items and extract details
-for item in announcement_items:
-    # Get the title and link of the announcement
-    title = item.find('h3').text.strip()
-    link = item.find('a').get('href')
+articles = news_updates_section.find_all("div", {"class": "views-row"})
 
-    # Get the date of the announcement
-    date = item.find('p', {'class': 'date'}).text.strip()
-
-    # Print announcement details
-    print(f"Title: {title}")
-    print(f"Link: {link}")
-    print(f"Date: {date}\n")
+for article in articles:
+    title = article.find("h3").text.strip()
+    link = article.find("a")["href"]
+    print(title)
+    print(link)
+    print()
+    
+driver.quit()
