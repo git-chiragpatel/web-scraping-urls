@@ -1,30 +1,29 @@
-import requests
 from bs4 import BeautifulSoup
+import requests
+from selenium import webdriver
 
-url = "https://jecrcuniversity.edu.in/"
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
 
-# Use requests to get the page content
-response = requests.get(url)
+driver = webdriver.Chrome(options=options)
 
-# Use BeautifulSoup to parse the page content
-soup = BeautifulSoup(response.content, 'html.parser')
+url = 'https://jecrcuniversity.edu.in/'
+driver.get(url)
 
-# Find the recent announcements section using BeautifulSoup
-recent_announcements = soup.find('section', {'id': 'recentAnnouncement'})
+html = driver.page_source
 
-# Find all announcement items within the recent announcements section
-announcement_items = recent_announcements.find_all('div', {'class': 'row'})
+soup = BeautifulSoup(html, 'html.parser')
 
-# Loop through all announcement items and extract details
-for item in announcement_items:
-    # Get the title and link of the announcement
-    title = item.find('h5').text.strip()
-    link = item.find('a').get('href')
+news_updates_section = soup.find('div', {'id': 'left-column'})
 
-    # Get the date of the announcement
-    date = item.find('span', {'class': 'date'}).text.strip()
+news_updates = news_updates_section.find_all('div', {'class': 'blog-post'})
+for news in news_updates:
+    print('Title:', news.find('h3').text)
+    print('Date:', news.find('span', {'class': 'date'}).text)
+    print('Description:', news.find('p').text)
+    print('Link:', url + news.find('a')['href'])
+    print('-' * 50)
 
-    # Print announcement details
-    print(f"Title: {title}")
-    print(f"Link: {link}")
-    print(f"Date: {date}\n")
+driver.quit()
