@@ -1,29 +1,37 @@
 from bs4 import BeautifulSoup
-import requests
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+from selenium.webdriver.chrome.service import Service
 
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+driver_service = Service('chromedriver.exe')
+driver = webdriver.Chrome(service=driver_service)
 
-driver = webdriver.Chrome(options=options)
+success = []
+failure = []
+scrapers_report = []
+news_articles = []
 
-url = 'https://jecrcuniversity.edu.in/'
-driver.get(url)
-
-html = driver.page_source
-
-soup = BeautifulSoup(html, 'html.parser')
-
-news_updates_section = soup.find('div', {'id': 'left-column'})
-
-news_updates = news_updates_section.find_all('div', {'class': 'blog-post'})
-for news in news_updates:
-    print('Title:', news.find('h3').text)
-    print('Date:', news.find('span', {'class': 'date'}).text)
-    print('Description:', news.find('p').text)
-    print('Link:', url + news.find('a')['href'])
-    print('-' * 50)
-
-driver.quit()
+try:
+    url = "https://jecrcuniversity.edu.in/"
+    base_url = url
+    name = 'JAGSOM'
+    scrapers_report.append([url,base_url,name])
+    driver.get(url)
+    time.sleep(3)
+    results = driver.find_elements(By.CLASS_NAME,"elementor-widget-container")
+    for i in results[1:4]:
+        li = i.find_elements(By.TAG_NAME, "li")
+        for j in li:
+            headline = j.text
+            link = j.find_element(By.TAG_NAME , "a").get_attribute('href')
+            if "http" not in link:
+                link = base_url + link
+            news_articles.append(("JAGSOM",headline,link))
+    success.append('JAGSOM')
+    driver.quit()
+except Exception as e:
+    driver.quit()
+    failure.append((name,e))
+    pass
+print(news_articles)
