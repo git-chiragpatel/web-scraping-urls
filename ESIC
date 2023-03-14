@@ -2,29 +2,19 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-url = "https://www.esic.gov.in/recruitments"
-
-# Use requests to get the page content
-response = requests.get(url)
-
-# Use BeautifulSoup to parse the page content
-soup = BeautifulSoup(response.content, 'html.parser')
-
-# Use Selenium to load the page content with JavaScript
 driver = webdriver.Chrome()
-driver.get(url)
-selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
+driver.get("https://www.esic.nic.in/recruitments")
+
+driver.implicitly_wait(10)
+page_source = driver.page_source
+
+soup = BeautifulSoup(page_source, 'html.parser')
+
+recruitments_section = soup.find('div', {'class': 'cms-content'}).find('ul')
+
+recruitments_list = recruitments_section.find_all('li')
+
+for recruitment in recruitments_list:
+    print(recruitment.text)
+
 driver.quit()
-
-# Find all job vacancies using BeautifulSoup
-job_vacancies = soup.find_all('div', class_='grid_4')
-
-# Extract job details from each vacancy and print
-for job in job_vacancies:
-    job_title = job.find('h2').text.strip()
-    job_location = job.find('span', class_='location').text.strip()
-    job_link = job.find('a')['href']
-    
-    print(f"Title: {job_title}")
-    print(f"Location: {job_location}")
-    print(f"Link: {job_link}\n")
