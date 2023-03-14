@@ -1,0 +1,30 @@
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://jecrcuniversity.edu.in/"
+
+# Use requests to get the page content
+response = requests.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Find the recent announcements section using BeautifulSoup
+recent_announcements = soup.find('section', {'id': 'recentAnnouncement'})
+
+# Find all announcement items within the recent announcements section
+announcement_items = recent_announcements.find_all('div', {'class': 'row'})
+
+# Loop through all announcement items and extract details
+for item in announcement_items:
+    # Get the title and link of the announcement
+    title = item.find('h5').text.strip()
+    link = item.find('a').get('href')
+
+    # Get the date of the announcement
+    date = item.find('span', {'class': 'date'}).text.strip()
+
+    # Print announcement details
+    print(f"Title: {title}")
+    print(f"Link: {link}")
+    print(f"Date: {date}\n")
