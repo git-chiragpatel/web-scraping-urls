@@ -2,30 +2,21 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
 
-url = 'https://www.nmimsbengaluru.org/'
-
-# Initialize a webdriver object and load the page
 driver = webdriver.Chrome()
-driver.get(url)
 
-# Use BeautifulSoup to parse the page content
-soup = BeautifulSoup(driver.page_source, 'html.parser')
+driver.get("https://www.nmimsbengaluru.org/")
 
-# Find all news and updates on the page using BeautifulSoup
-news = soup.find_all('div', class_='blogpost')
+html = requests.get(driver.current_url).text
 
-# Loop through all news and updates and print their content
-for item in news:
-    # Get the news/update title and content
-    title = item.find('h3')
-    date = item.find('span', class_='blog-date')
-    content = item.find('div', class_='blog-descr')
+soup = BeautifulSoup(html, "html.parser")
 
-    # Print the news/update title, date and content
-    if title and content:
-        print(title.text.strip())
-        print(date.text.strip())
-        print(content.text.strip())
+news_section = soup.find("div", {"class": "col-md-8"})
 
-# Quit the webdriver
+news_articles = news_section.find_all("div", {"class": "news__block"})
+
+for article in news_articles:
+    title = article.find("h5", {"class": "news__title"}).text.strip()
+    date = article.find("p", {"class": "news__date"}).text.strip()
+    print(f"{title} - {date}")
+
 driver.quit()
