@@ -1,34 +1,24 @@
-from selenium import webdriver
+import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
-url = 'https://www.unom.ac.in/index.php?route=administration/announcement'
-
-# Initialize a webdriver object and load the page
 driver = webdriver.Chrome()
-driver.get(url)
+driver.get("https://www.unom.ac.in/index.php?route=administration/announcement")
 
-# Use BeautifulSoup to parse the page content
-soup = BeautifulSoup(driver.page_source, 'html.parser')
+driver.implicitly_wait(10)
+page_source = driver.page_source
 
-# Find the recent announcements section using BeautifulSoup
-recent_announcements = soup.find('div', {'id': 'content'})
+soup = BeautifulSoup(page_source, 'html.parser')
 
-# Find all announcement items within the recent announcements section
-announcement_items = recent_announcements.find_all('div', {'class': 'announcement'})
+# Find the news section
+news_section = soup.find('div', {'class': 'blog'})
 
-# Loop through all announcement items and extract details
-for item in announcement_items:
-    # Get the title and link of the announcement
-    title = item.find('div', {'class': 'caption'}).text.strip()
-    link = item.find('a').get('href')
+# Extract the news items
+news_items = news_section.find_all('div', {'class': 'media'})
 
-    # Get the date of the announcement
-    date = item.find('div', {'class': 'date'}).text.strip()
-
-    # Print announcement details
-    print(f"Title: {title}")
-    print(f"Link: {link}")
-    print(f"Date: {date}\n")
-
-# Quit the webdriver
+for item in news_items:
+    title = item.find('h4', {'class': 'media-heading'}).text.strip()
+    date = item.find('span', {'class': 'date'}).text.strip()
+    print(f'{title} ({date})\n')
+    
 driver.quit()
