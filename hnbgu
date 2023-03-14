@@ -1,0 +1,33 @@
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import requests
+
+url = 'http://hnbgu.ac.in/'
+
+# Initialize a webdriver object and load the page
+driver = webdriver.Chrome()
+driver.get(url)
+
+# Find the "News & Events" link and click it
+news_link = driver.find_element_by_xpath("//a[@title='News & Events']")
+news_link.click()
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+# Find all news items on the page using BeautifulSoup
+news_items = soup.find_all('div', class_='news-item')
+
+# Loop through all news items and print their content
+for news_item in news_items:
+    # Get the news item date and content
+    date = news_item.find('div', class_='date')
+    content = news_item.find('div', class_='content')
+
+    # Print the news item date and content
+    if date and content:
+        print(date.text)
+        print(content.text)
+
+# Quit the webdriver
+driver.quit()
