@@ -1,0 +1,47 @@
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import requests
+import re
+
+url = 'https://www.cukashmir.ac.in/default.aspx'
+
+# Initialize a webdriver object and load the page
+driver = webdriver.Chrome()
+driver.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+# Find all links on the page using BeautifulSoup
+links = soup.find_all('a')
+
+# Store the URLs of internal links in a set to avoid duplicates
+internal_links = set()
+
+# Loop through all links and extract internal links
+for link in links:
+    href = link.get('href')
+    if href and not re.match(r'http', href):
+        internal_links.add(href)
+
+# Loop through all internal links and scrape their content
+for link in internal_links:
+    # Construct the full URL of the link
+    full_url = url + link if link.startswith('/') else url + '/' + link
+
+    # Make a request to the link URL and get its content using requests
+    response = requests.get(full_url)
+
+    # Use BeautifulSoup to parse the link content
+    link_soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Print the page title
+    title = link_soup.find('title')
+    if title:
+        print(title.text)
+
+    # Print the page content
+    print(link_soup.text)
+
+# Quit the webdriver
+driver.quit()
