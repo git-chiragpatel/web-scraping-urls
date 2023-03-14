@@ -1,0 +1,31 @@
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import requests
+
+url = 'https://www.nmimsbengaluru.org/'
+
+# Initialize a webdriver object and load the page
+driver = webdriver.Chrome()
+driver.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+# Find all news and updates on the page using BeautifulSoup
+news = soup.find_all('div', class_='blogpost')
+
+# Loop through all news and updates and print their content
+for item in news:
+    # Get the news/update title and content
+    title = item.find('h3')
+    date = item.find('span', class_='blog-date')
+    content = item.find('div', class_='blog-descr')
+
+    # Print the news/update title, date and content
+    if title and content:
+        print(title.text.strip())
+        print(date.text.strip())
+        print(content.text.strip())
+
+# Quit the webdriver
+driver.quit()
