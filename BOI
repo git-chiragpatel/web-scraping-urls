@@ -4,14 +4,12 @@ import requests
 
 url = 'https://bankofindia.co.in/recruitment-notice'
 
-# Initialize a webdriver object and load the page
 driver = webdriver.Chrome()
 driver.get(url)
 
-# Use BeautifulSoup to parse the page content
+
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-# Find all recruitment notices on the page using BeautifulSoup
 recruitments = soup.find_all('div', class_='section-1')
 
 # Loop through all recruitment notices and print their content
@@ -20,10 +18,8 @@ for recruitment in recruitments:
     title = recruitment.find('h2')
     content = recruitment.find('div', class_='content')
 
-    # Print the recruitment notice title and content
     if title and content:
         print(title.text)
         print(content.text)
 
-# Quit the webdriver
 driver.quit()
