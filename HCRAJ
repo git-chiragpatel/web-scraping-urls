@@ -1,30 +1,31 @@
-import requests
+import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import requests
 
-url = "https://hcraj.nic.in/hcraj/recruitment.php"
+options = webdriver.ChromeOptions()
+options.add_argument('--ignore-certificate-errors')
+options.add_argument('--incognito')
+options.add_argument('--headless')
+driver = webdriver.Chrome(options=options)
 
-# Use requests to get the page content
-response = requests.get(url)
+url = 'https://hcraj.nic.in/hcraj/recruitment.php'
 
-# Use BeautifulSoup to parse the page content
-soup = BeautifulSoup(response.content, 'html.parser')
-
-# Use Selenium to load the page content with JavaScript
-driver = webdriver.Chrome()
 driver.get(url)
-selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
-driver.quit()
 
-# Find all job vacancies using BeautifulSoup
-job_vacancies = soup.find_all('div', class_='latest_update_block')
+time.sleep(5)
 
-# Extract job details from each vacancy and print
-for job in job_vacancies:
-    job_title = job.find('h4').text.strip()
-    job_location = job.find('p', class_='rec_info').text.strip()
-    job_link = "https://hcraj.nic.in/hcraj/" + job.find('a')['href']
-    
-    print(f"Title: {job_title}")
-    print(f"Location: {job_location}")
-    print(f"Link: {job_link}\n")
+page_source = driver.page_source
+
+soup = BeautifulSoup(page_source, 'html.parser')
+
+table = soup.find('table', {'id': 'table'})
+
+rows = table.find_all('tr')
+
+for row in rows:
+    data = row.find_all('td')
+    if len(data) > 0:
+        print(data[0].text.strip(), data[1].text.strip(), data[2].text.strip(), data[3].text.strip())
+
+driver.close()
