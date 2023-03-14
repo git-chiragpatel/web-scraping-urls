@@ -4,22 +4,17 @@ from selenium import webdriver
 
 url = "http://www.buruniv.ac.in/"
 
-# Use requests to get the page content
 response = requests.get(url)
 
-# Use BeautifulSoup to parse the page content
 soup = BeautifulSoup(response.content, 'html.parser')
 
-# Use Selenium to load the page content with JavaScript
 driver = webdriver.Chrome()
 driver.get(url)
 selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
 driver.quit()
 
-# Find all upcoming news and events using BeautifulSoup
 upcoming_events = selenium_soup.find_all('ul', class_='news-block')
 
-# Extract event details from each event and print
 for event in upcoming_events:
     event_title = event.find('a').text.strip()
     event_date = event.find('span', class_='date').text.strip()
