@@ -1,27 +1,37 @@
-import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+from selenium.webdriver.chrome.service import Service
 
-url = "http://www.buruniv.ac.in/"
+driver_service = Service('chromedriver.exe')
+driver = webdriver.Chrome(service=driver_service)
 
-response = requests.get(url)
+success = []
+failure = []
+scrapers_report = []
+news_articles = []
 
-soup = BeautifulSoup(response.content, 'html.parser')
-
-driver = webdriver.Chrome()
-driver.get(url)
-selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
-driver.quit()
-
-upcoming_events = selenium_soup.find_all('ul', class_='news-block')
-
-for event in upcoming_events:
-    event_title = event.find('a').text.strip()
-    event_date = event.find('span', class_='date').text.strip()
-    event_time = event.find('span', class_='time').text.strip()
-    event_link = url + event.find('a')['href']
-    
-    print(f"Title: {event_title}")
-    print(f"Date: {event_date}")
-    print(f"Time: {event_time}")
-    print(f"Link: {event_link}\n")
+try:
+    url = "http://www.buruniv.ac.in/"
+    base_url = url
+    name = 'BRUNIV'
+    scrapers_report.append([url,base_url,name])
+    driver.get(url)
+    time.sleep(3)
+    results = driver.find_elements(By.CLASS_NAME,"col-sm-4")
+    for i in results[1:9]:
+        li = i.find_elements(By.TAG_NAME, "li")
+        for j in li:
+            headline = j.text
+            link = j.find_element(By.TAG_NAME , "a").get_attribute('href')
+            if "http" not in link:
+                link = base_url + link
+            news_articles.append(("BRUNIV",headline,link))
+    success.append('BRUNIV')
+    driver.quit()
+except Exception as e:
+    driver.quit()
+    failure.append((name,e))
+    pass
+print(news_articles)
