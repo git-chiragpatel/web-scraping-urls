@@ -1,0 +1,34 @@
+from selenium import webdriver
+from bs4 import BeautifulSoup
+
+url = 'http://www.mnit.ac.in/news/newsall.php?type=latest'
+
+# Initialize a webdriver object and load the page
+driver = webdriver.Chrome()
+driver.get(url)
+
+# Use BeautifulSoup to parse the page content
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+# Find the latest news section using BeautifulSoup
+latest_news = soup.find('div', {'class': 'panel-body'})
+
+# Find all news items within the latest news section
+news_items = latest_news.find_all('div', {'class': 'panel-heading'})
+
+# Loop through all news items and extract details
+for item in news_items:
+    # Get the title and link of the news item
+    title = item.find('a').text.strip()
+    link = 'http://www.mnit.ac.in/news/' + item.find('a').get('href')
+
+    # Get the date of the news item
+    date = item.find('small').text.strip()
+
+    # Print news item details
+    print(f"Title: {title}")
+    print(f"Link: {link}")
+    print(f"Date: {date}\n")
+
+# Quit the webdriver
+driver.quit()
