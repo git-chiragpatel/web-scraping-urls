@@ -1,37 +1,37 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import time
-from selenium.webdriver.chrome.service import Service
+from urllib.request import urlopen
+import ssl
 
-driver_service = Service('chromedriver.exe')
-driver = webdriver.Chrome(service=driver_service)
+context = ssl._create_unverified_context()
 
-success = []
-failure = []
-scrapers_report = []
-news_articles = []
+article=[]
+links = []
+success=[]
+failure=[]
+scrapers_report=[]
 
 try:
-    url = "https://mpbse.nic.in/"
-    base_url = url
-    name = 'MPBSE'
+    name ="Mpbsc"
+    url = "https://mpbse.nic.in/latest-circulars.html"
+    base_url = "https://mpbse.nic.in"
+
     scrapers_report.append([url,base_url,name])
-    driver.get(url)
-    time.sleep(3)
-    results = driver.find_elements(By.CLASS_NAME,"row")
-    for i in results[1:9]:
-        li = i.find_elements(By.TAG_NAME, "li")
-        for j in li:
-            headline = j.text
-            link = j.find_element(By.TAG_NAME , "a").get_attribute('href')
-            if "http" not in link:
-                link = base_url + link
-            news_articles.append(("MPBSE",headline,link))
-    success.append('MPBSE')
-    driver.quit()
+    res = urlopen(url,context=context)
+    soup =BeautifulSoup(res,"html.parser")
+    results = soup.find_all("tr")
+
+    for i in results:
+        link = i.find('a')
+        if link != None:
+            u= f"{base_url}/{link.get('href')}"
+            links.append(u)
+
+
+    for i in results:
+        art = i.find("b")
+        if art != None:
+            article.append(art.string)
+
+    success.append(name)
 except Exception as e:
-    driver.quit()
     failure.append((name,e))
-    pass
-print(news_articles)
