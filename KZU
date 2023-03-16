@@ -14,7 +14,7 @@ news_articles = []
 
 try:
     url = "https://www.kzu.ac.in/notices"
-    base_url = url
+    base_url = "https://www.kzu.ac.in"
     name = 'KZU'
     scrapers_report.append([url,base_url,name])
     driver.get(url)
